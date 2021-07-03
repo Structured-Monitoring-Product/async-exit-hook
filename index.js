@@ -1,7 +1,7 @@
 'use strict';
 
-const hooks = [];
-const errHooks = [];
+const hooks = new Set();
+const errHooks = new Set();
 let called = false;
 let waitingFor = 0;
 let asyncTimeoutMs = 10000;
@@ -66,9 +66,13 @@ function exit(exit, code, err) {
 	// Run hooks
 	if (err) {
 		// Uncaught exception, run error hooks
-		errHooks.map(runHook.bind(null, 1, err));
+		for (const hook of errHooks) {
+			runHook.bind(null, 1, err);
+		}
 	}
-	hooks.map(runHook.bind(null, 0, null));
+	for (const hook of hooks) {
+		runHook.bind(null, 0, null);
+	}
 
 	if (waitingFor) {
 		// Force exit after x ms (10000 by default), even if async hooks in progress
@@ -83,9 +87,9 @@ function exit(exit, code, err) {
 
 // Add a hook
 function add(hook) {
-	hooks.push(hook);
+	hooks.add(hook);
 
-	if (hooks.length === 1) {
+	if (hooks.size === 1) {
 		add.hookEvent('exit');
 		add.hookEvent('beforeExit', 0);
 		add.hookEvent('SIGHUP', 128 + 1);
@@ -102,6 +106,10 @@ function add(hook) {
 			}
 		});
 	}
+	
+	return () => {
+		hooks.delete(hook);
+	};
 }
 
 // New signal / event to hook
@@ -146,9 +154,9 @@ add.hookedEvents = function () {
 
 // Add an uncaught exception handler
 add.uncaughtExceptionHandler = function (hook) {
-	errHooks.push(hook);
+	errHooks.add(hook);
 
-	if (errHooks.length === 1) {
+	if (errHooks.size === 1) {
 		process.once('uncaughtException', exit.bind(null, true, 1));
 	}
 };
@@ -160,6 +168,10 @@ add.unhandledRejectionHandler = function (hook) {
 	if (errHooks.length === 1) {
 		process.once('unhandledRejection', exit.bind(null, true, 1));
 	}
+	
+	return () => {
+		errHooks.delete(hook);
+	};
 };
 
 // Configure async force exit timeout
