@@ -1,18 +1,23 @@
 {
-  "name": "async-exit-hook",
+  "name": "@structured-monitoring-product/async-exit-hook",
   "version": "2.0.1",
   "description": "Run some code when the process exits (supports async hooks and pm2 clustering)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tapppi/async-exit-hook.git"
+    "url": "https://github.com/Structured-Monitoring-Product/async-exit-hook.git"
   },
   "author": {
-    "name": "Tapani Moilanen",
-    "email": "moilanen.tapani@gmail.com",
-    "url": "https://github.com/tapppi"
+    "name": "Austin Wilson",
+    "email": "austin.wilson@structuredmp.com",
+    "url": "https://github.com/austinmathuw"
   },
   "contributors": [
+    {
+      "name": "Tapani Moilanen",
+      "email": "moilanen.tapani@gmail.com",
+      "url": "https://github.com/tapppi"
+    },
     {
       "name": "Sindre Sorhus",
       "email": "sindresorhus@gmail.com",
