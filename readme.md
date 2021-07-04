@@ -110,6 +110,29 @@ throw new Error('awesome');
 //=> 'exiting 3'
 ```
 
+Removing an exit hook:
+
+```js
+const exitHook = require('async-exit-hook');
+
+const unsubscribe = exitHook(() => {
+    console.log("Will not print on exit");
+});
+
+unsubscribe();
+```
+
+## API
+
+### exitHook(callback)
+
+Returns a function that removes the hook when called.
+
+#### callback
+
+Type: `Function`
+
+The callback to execute when the process exits.
 
 ## License
 
