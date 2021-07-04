@@ -66,13 +66,11 @@ function exit(exit, code, err) {
 	// Run hooks
 	if (err) {
 		// Uncaught exception, run error hooks
-		for (const hook of errHooks) {
-			runHook.bind(null, 1, err);
-		}
+		const errHooksArray = Array.from(errHooks);
+		errHooksArray.map(runHook.bind(null, 1, err));
 	}
-	for (const hook of hooks) {
-		runHook.bind(null, 0, null);
-	}
+	const hooksArray = Array.from(hooks);
+	hooksArray.map(runHook.bind(null, 0, null));
 
 	if (waitingFor) {
 		// Force exit after x ms (10000 by default), even if async hooks in progress
@@ -106,7 +104,7 @@ function add(hook) {
 			}
 		});
 	}
-	
+
 	return () => {
 		hooks.delete(hook);
 	};
@@ -159,16 +157,20 @@ add.uncaughtExceptionHandler = function (hook) {
 	if (errHooks.size === 1) {
 		process.once('uncaughtException', exit.bind(null, true, 1));
 	}
+
+	return () => {
+		errHooks.delete(hook);
+	};
 };
 
 // Add an unhandled rejection handler
 add.unhandledRejectionHandler = function (hook) {
-	errHooks.push(hook);
+	errHooks.add(hook);
 
-	if (errHooks.length === 1) {
+	if (errHooks.size === 1) {
 		process.once('unhandledRejection', exit.bind(null, true, 1));
 	}
-	
+
 	return () => {
 		errHooks.delete(hook);
 	};

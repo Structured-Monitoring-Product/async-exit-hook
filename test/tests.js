@@ -84,6 +84,14 @@ test('async handlers', async t => {
 	t.is(code, 0);
 });
 
+test('remove-hook', async t => {
+	t.plan(2);
+	const [code, output] = await testInSub('remove-hook', 'shutdown');
+
+	t.is(output, 'SUCCESS');
+	t.is(code, 0);
+});
+
 test('async uncaught exception handler', async t => {
 	t.plan(2);
 	const [code, output] = await testInSub('async-err');
